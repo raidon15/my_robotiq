@@ -1,0 +1,15 @@
+<launch>
+  <arg name="robot_name"
+       default="lbr"
+       description="The robot's name used as the namespace."/>
+
+  <let name="cm_name" value="controller_manager" if="$(eval '\'$(var robot_name)\' == \'\'')"/>
+  <let name="cm_name" value="/$(var robot_name)/controller_manager" unless="$(eval '\'$(var robot_name)\' == \'\'')"/>
+
+  <node pkg="controller_manager" exec="spawner" 
+        args="robotiq_gripper_controller --controller-manager $(var cm_name) --param-file /home/benjamin/vla_ws/robotiq_description/config/robotiq_hand_e_controllers.yaml"
+        namespace="$(var robot_name)"
+        output="screen">
+    <param name="use_sim_time" value="true"/>
+  </node>
+</launch>
