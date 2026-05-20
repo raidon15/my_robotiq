@@ -1,0 +1,23 @@
+controller_manager:
+  ros__parameters:
+    update_rate: 500  # Hz
+    joint_state_broadcaster:
+      type: joint_state_broadcaster/JointStateBroadcaster
+    robotiq_gripper_controller:
+      type: position_controllers/GripperActionController
+    robotiq_activation_controller:
+      type: robotiq_controllers/RobotiqActivationController
+
+robotiq_gripper_controller:
+  ros__parameters:
+    # CHANGE THIS from hande_finger_distance to your main driver joint
+    joint: hande_left_finger_joint
+    
+    action_monitor_rate: 20.0
+    goal_tolerance: 0.01
+    stall_velocity_threshold: 0.001
+    stall_timeout: 1.0
+
+robotiq_activation_controller:
+  ros__parameters:
+    default: true

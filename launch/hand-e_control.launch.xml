@@ -1,0 +1,57 @@
+<launch>
+  <arg name="runtime_config_package"
+       default="robotiq_description"
+       description="Package with the controller's configuration in 'config' folder."/>
+  <arg name="controllers_file"
+       default="robotiq_hand_e_controllers"
+       description="YAML file (without extension) with the controllers configuration."/>
+  <arg name="description_package"
+       default="robotiq_description"
+       description="Description package with robot URDF/xacro files."/>
+  <arg name="description_file"
+       default="robotiq_hand_e_gripper"
+       description="URDF/XACRO description file (without extension) with the robot."/>
+  <arg name="prefix"
+       default=""
+       description="Prefix of the joint names, useful for multi-robot setup."/>
+       
+  <!-- For Gazebo simulation, we explicitly set mock hardware to FALSE -->
+  <arg name="use_mock_hardware"
+       default="false"/>
+  <arg name="mock_sensor_commands"
+       default="false"/>
+
+  <!-- 1. Parse URDF/XACRO with simulation properties activated explicitly -->
+  <let name="robot_description_content" value="$(command '$(find-exec xacro) $(find-pkg-share $(var description_package))/urdf/$(var description_file).urdf.xacro prefix:=$(var prefix) sim_gazebo:=true use_mock_hardware:=$(var use_mock_hardware) mock_sensor_commands:=$(var mock_sensor_commands)')"/>
+
+  <!-- 2. Robot State Publisher Node (using type='str' to bypass the launch YAML parser) -->
+  <node pkg="robot_state_publisher" exec="robot_state_publisher" output="both">
+     <param name="robot_description" value="$(var robot_description_content)" type="str"/>  
+     <param name="use_sim_time" value="true"/>
+  </node>
+
+  <!-- 3. Launch Gazebo Harmonic (via the ros_gz_sim wrapper launch file) -->
+  <include file="$(find-pkg-share ros_gz_sim)/launch/gz_sim.launch.py">
+    <arg name="gz_args" value="-r empty.sdf"/>
+  </include>
+
+  <!-- 4. Spawn the Hand-E Gripper into the running Gazebo World from the topic -->
+  <node pkg="ros_gz_sim" exec="create" output="screen" args="-topic robot_description -name robotiq_hande -world empty"/>
+
+  <!-- 4.1. Bridge clock from Gazebo to ROS -->
+  <node pkg="ros_gz_bridge" exec="parameter_bridge" args="/clock@rosgraph_msgs/msg/Clock[gz.msgs.Clock" />
+
+  <!-- 5. RViz Node (Optional - configures with simulation sync paths) -->
+  <node pkg="rviz2" exec="rviz2" output="log" args="-d $(find-pkg-share $(var description_package))/rviz/view_urdf.rviz">
+    <param name="use_sim_time" value="true"/>
+  </node>
+
+  <!-- 6. Controller Spawners (Fixed parameter passing syntax for ROS 2 Jazzy) -->
+  <node pkg="controller_manager" exec="spawner" args="joint_state_broadcaster">
+    <param name="use_sim_time" value="true"/>
+  </node>
+
+  <node pkg="controller_manager" exec="spawner" args="robotiq_gripper_controller">
+    <param name="use_sim_time" value="true"/>
+  </node>
+</launch>

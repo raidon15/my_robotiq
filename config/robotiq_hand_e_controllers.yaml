@@ -1,0 +1,17 @@
+controller_manager:
+  ros__parameters:
+    update_rate: 500  # Hz
+    joint_state_broadcaster:
+      type: joint_state_broadcaster/JointStateBroadcaster
+    robotiq_gripper_controller:
+      # Keep it as a Joint Group Position Controller
+      type: position_controllers/JointGroupPositionController
+    robotiq_activation_controller:
+      type: robotiq_controllers/RobotiqActivationController
+
+robotiq_gripper_controller:
+  ros__parameters:
+    # Crucial Change: MUST be 'joints' (plural) and laid out as an array list
+    joints:
+      - hande_left_finger_joint
+      - hande_right_finger_joint

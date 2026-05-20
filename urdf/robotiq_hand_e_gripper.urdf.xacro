@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<robot xmlns:xacro="http://wiki.ros.org/xacro" name="robotiq_hande">
+
+  <xacro:arg name="prefix" default="" />
+  <!-- EXPOSE THE SIMULATION ARGUMENTS TO THE LAUNCH SYSTEM -->
+  <xacro:arg name="sim_gazebo" default="true" />
+  <xacro:arg name="sim_isaac" default="false" />
+  <xacro:arg name="use_mock_hardware" default="false" />
+  <xacro:arg name="mock_sensor_commands" default="false" />
+
+  <xacro:include filename="$(find robotiq_description)/urdf/robotiq_hand_e_macro.urdf.xacro"/>
+  <xacro:include filename="$(find robotiq_description)/urdf/hand_e.ros2_control.xacro"/>
+
+  <!-- World Anchor -->
+  <link name="base_link" />
+
+  <!-- Load robot's macro -->
+  <xacro:robotiq_hande prefix="$(arg prefix)" parent="base_link" >
+    <origin xyz="0 0 0" rpy="0 0 0" />
+  </xacro:robotiq_hande>
+
+  <!-- Load control interfaces -->
+  <!-- PASSED sim_gazebo DOWN TO TRIGGER THE GazeboSimSystem PLUGIN -->
+  <xacro:robotiq_hande_ros2_control
+    name="robotiq_hande"
+    prefix="$(arg prefix)"
+    sim_gazebo="$(arg sim_gazebo)"
+    sim_isaac="$(arg sim_isaac)"
+    use_mock_hardware="$(arg use_mock_hardware)"
+    mock_sensor_commands="$(arg mock_sensor_commands)" />
+
+  <!-- CRITICAL FOR GAZEBO: Load the Gazebo ROS 2 Control Plugin -->
+  <gazebo>
+    <plugin filename="gz_ros2_control-system" name="gz_ros2_control::GazeboSimROS2ControlPlugin">
+      <parameters>$(find robotiq_description)/config/robotiq_hand_e_controllers.yaml</parameters>
+    </plugin>
+  </gazebo>
+
+</robot>
