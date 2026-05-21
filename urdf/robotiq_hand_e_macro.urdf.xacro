@@ -126,7 +126,7 @@
         <parent link="${prefix}hand_e_base_link"/>
         <child link="${prefix}hande_right_finger"/>
         <axis xyz="1 0 0"/>
-        <limit effort="200.0" lower="0.0" upper="${gripper_maximal_stroke/2}" velocity="0.15"/>
+        <limit effort="200.0" lower="-10000.0" upper="${gripper_maximal_stroke/2}" velocity="0.15"/>
         <dynamics damping="1.0" friction="0.1"/>
       </joint>
 
