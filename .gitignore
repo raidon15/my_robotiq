@@ -1,0 +1,56 @@
+# Build directories
+build/
+install/
+log/
+logs/
+
+# ROS 2 specific
+*.ros.distro
+.colcon/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+pip-log.txt
+pip-delete-this-directory.txt
+.tox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+.hypothesis/
+.pytest_cache/
+
+# Virtual environments
+bin/
+lib/
+share/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+*.code-workspace
+
+# MuJoCo and simulation
+*.mjb
+*.log
+screenshots/
+*.png
+*.jpg
+
+# Dependencies
+*.egg-info/
+dist/
+build_output/
